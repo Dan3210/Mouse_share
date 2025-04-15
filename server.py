@@ -74,7 +74,9 @@ class Server:
                 'type': 'mouse_move',
                 'x': x,
                 'y': y,
-                'platform': 'linux' if self.is_linux else 'windows'
+                'platform': 'linux' if self.is_linux else 'windows',
+                'server_width': self.screen_width,
+                'server_height': self.screen_height
             }
             self.send_data(data)
 

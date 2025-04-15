@@ -59,17 +59,23 @@ class Client:
                 if x <= self.margin:
                     # When receiving a transition command, move to right edge
                     x = self.screen_width - self.margin
-                    # Use platform-specific movement
                     if self.is_linux:
                         pyautogui.moveTo(x, y)
                     else:
                         pyautogui.moveTo(x, y, duration=0.1)
                 else:
-                    # Normal mouse movement
+                    # For normal mouse movements, map the coordinates to client screen
+                    # Calculate the relative position on the client screen
+                    relative_x = (x - self.margin) / (command.get('server_width', self.screen_width) - self.margin)
+                    mapped_x = int(relative_x * (self.screen_width - self.margin) + self.margin)
+                    
+                    # Keep y coordinate as is, just ensure it's within bounds
+                    mapped_y = max(self.margin, min(y, self.screen_height - self.margin))
+                    
                     if self.is_linux:
-                        pyautogui.moveTo(x, y)
+                        pyautogui.moveTo(mapped_x, mapped_y)
                     else:
-                        pyautogui.moveTo(x, y, duration=0.1)
+                        pyautogui.moveTo(mapped_x, mapped_y, duration=0.1)
             
             elif command['type'] == 'mouse_click':
                 x = command['x']
