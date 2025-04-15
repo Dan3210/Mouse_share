@@ -48,20 +48,15 @@ class Client:
                 x = command['x']
                 y = command['y']
                 
-                # Handle screen edge transitions more gracefully
-                # Add a small margin to prevent triggering the failsafe
+                # Only handle right edge transition
                 margin = 10
                 if x <= margin:
+                    # Move to right edge of client screen
                     x = self.screen_width - margin
-                elif x >= self.screen_width - margin:
-                    x = margin
-                elif y <= margin:
-                    y = self.screen_height - margin
-                elif y >= self.screen_height - margin:
-                    y = margin
-                
-                # Move the mouse with a small delay to prevent failsafe
-                pyautogui.moveTo(x, y, duration=0.1)
+                    pyautogui.moveTo(x, y, duration=0.1)
+                else:
+                    # Normal mouse movement
+                    pyautogui.moveTo(x, y, duration=0.1)
             
             elif command['type'] == 'mouse_click':
                 x = command['x']

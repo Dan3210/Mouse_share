@@ -64,8 +64,8 @@ class Server:
         if not self.running:
             return
 
-        # Check if mouse is at screen edges
-        if x <= 0 or x >= self.screen_width - 1 or y <= 0 or y >= self.screen_height - 1:
+        # Only check for left edge transition
+        if x <= 0:
             data = {
                 'type': 'mouse_move',
                 'x': x,
