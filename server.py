@@ -4,6 +4,7 @@ import pyautogui
 from pynput import mouse, keyboard
 import threading
 import sys
+import platform
 
 class Server:
     def __init__(self, host='0.0.0.0', port=5000):
@@ -14,6 +15,9 @@ class Server:
         self.client_address = None
         self.screen_width, self.screen_height = pyautogui.size()
         self.running = False
+        self.is_linux = platform.system().lower() == 'linux'
+        # Adjust margin based on platform
+        self.margin = 5 if self.is_linux else 10
 
     def start(self):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -64,12 +68,13 @@ class Server:
         if not self.running:
             return
 
-        # Only check for left edge transition
-        if x <= 0:
+        # Only check for left edge transition with platform-specific margin
+        if x <= self.margin:
             data = {
                 'type': 'mouse_move',
                 'x': x,
-                'y': y
+                'y': y,
+                'platform': 'linux' if self.is_linux else 'windows'
             }
             self.send_data(data)
 
@@ -82,7 +87,8 @@ class Server:
             'x': x,
             'y': y,
             'button': str(button),
-            'pressed': pressed
+            'pressed': pressed,
+            'platform': 'linux' if self.is_linux else 'windows'
         }
         self.send_data(data)
 
@@ -93,7 +99,8 @@ class Server:
         try:
             data = {
                 'type': 'key_press',
-                'key': str(key)
+                'key': str(key),
+                'platform': 'linux' if self.is_linux else 'windows'
             }
             self.send_data(data)
         except AttributeError:
@@ -106,7 +113,8 @@ class Server:
         try:
             data = {
                 'type': 'key_release',
-                'key': str(key)
+                'key': str(key),
+                'platform': 'linux' if self.is_linux else 'windows'
             }
             self.send_data(data)
         except AttributeError:

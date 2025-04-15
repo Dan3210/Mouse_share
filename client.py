@@ -3,6 +3,7 @@ import json
 import pyautogui
 from pynput.mouse import Button
 import sys
+import platform
 
 class Client:
     def __init__(self, host, port=5000):
@@ -11,6 +12,12 @@ class Client:
         self.client_socket = None
         self.running = False
         self.screen_width, self.screen_height = pyautogui.size()
+        self.is_linux = platform.system().lower() == 'linux'
+        # Adjust margin based on platform
+        self.margin = 5 if self.is_linux else 10
+        # Disable PyAutoGUI failsafe on Linux
+        if self.is_linux:
+            pyautogui.FAILSAFE = False
 
     def connect(self):
         try:
@@ -49,16 +56,20 @@ class Client:
                 y = command['y']
                 
                 # Handle transition from server to client
-                margin = 10
-                if x <= margin:
-                    # When receiving a transition command (x <= margin),
-                    # move the cursor to the right edge of client screen
-                    x = self.screen_width - margin
-                    pyautogui.moveTo(x, y, duration=0.1)
+                if x <= self.margin:
+                    # When receiving a transition command, move to right edge
+                    x = self.screen_width - self.margin
+                    # Use platform-specific movement
+                    if self.is_linux:
+                        pyautogui.moveTo(x, y)
+                    else:
+                        pyautogui.moveTo(x, y, duration=0.1)
                 else:
-                    # For normal mouse movements, use the received coordinates directly
-                    # This allows free movement on the client screen
-                    pyautogui.moveTo(x, y, duration=0.1)
+                    # Normal mouse movement
+                    if self.is_linux:
+                        pyautogui.moveTo(x, y)
+                    else:
+                        pyautogui.moveTo(x, y, duration=0.1)
             
             elif command['type'] == 'mouse_click':
                 x = command['x']
