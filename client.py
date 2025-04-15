@@ -25,14 +25,19 @@ class Client:
             self.cleanup()
 
     def receive_commands(self):
+        buffer = ""
         while self.running:
             try:
                 data = self.client_socket.recv(1024)
                 if not data:
                     break
                 
-                command = json.loads(data.decode())
-                self.execute_command(command)
+                buffer += data.decode()
+                while '\n' in buffer:
+                    line, buffer = buffer.split('\n', 1)
+                    if line.strip():
+                        command = json.loads(line)
+                        self.execute_command(command)
             except Exception as e:
                 print(f"Error receiving command: {e}")
                 break

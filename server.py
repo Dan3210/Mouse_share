@@ -115,7 +115,7 @@ class Server:
     def send_data(self, data):
         if self.client_socket:
             try:
-                self.client_socket.send(json.dumps(data).encode())
+                self.client_socket.send((json.dumps(data) + '\n').encode())
             except Exception as e:
                 print(f"Error sending data: {e}")
                 self.running = False
