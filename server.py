@@ -68,17 +68,17 @@ class Server:
         if not self.running:
             return
 
-        # Only check for left edge transition with platform-specific margin
-        if x <= self.margin:
-            data = {
-                'type': 'mouse_move',
-                'x': x,
-                'y': y,
-                'platform': 'linux' if self.is_linux else 'windows',
-                'server_width': self.screen_width,
-                'server_height': self.screen_height
-            }
-            self.send_data(data)
+        # Send all mouse movements, not just edge transitions
+        data = {
+            'type': 'mouse_move',
+            'x': x,
+            'y': y,
+            'platform': 'linux' if self.is_linux else 'windows',
+            'server_width': self.screen_width,
+            'server_height': self.screen_height,
+            'is_edge': x <= self.margin  # Flag to indicate if this is an edge transition
+        }
+        self.send_data(data)
 
     def on_mouse_click(self, x, y, button, pressed):
         if not self.running:

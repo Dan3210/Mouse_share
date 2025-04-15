@@ -55,9 +55,9 @@ class Client:
                 x = command['x']
                 y = command['y']
                 
-                # Handle transition from server to client
-                if x <= self.margin:
-                    # When receiving a transition command, move to right edge
+                # Handle edge transition
+                if command.get('is_edge', False):
+                    # When at the edge, move to the right edge of client screen
                     x = self.screen_width - self.margin
                     if self.is_linux:
                         pyautogui.moveTo(x, y)
@@ -66,11 +66,20 @@ class Client:
                 else:
                     # For normal mouse movements, map the coordinates to client screen
                     # Calculate the relative position on the client screen
-                    relative_x = (x - self.margin) / (command.get('server_width', self.screen_width) - self.margin)
-                    mapped_x = int(relative_x * (self.screen_width - self.margin) + self.margin)
+                    server_width = command.get('server_width', self.screen_width)
+                    server_height = command.get('server_height', self.screen_height)
                     
-                    # Keep y coordinate as is, just ensure it's within bounds
-                    mapped_y = max(self.margin, min(y, self.screen_height - self.margin))
+                    # Map x coordinate from server to client screen
+                    relative_x = (x - self.margin) / (server_width - 2 * self.margin)
+                    mapped_x = int(relative_x * (self.screen_width - 2 * self.margin) + self.margin)
+                    
+                    # Map y coordinate from server to client screen
+                    relative_y = y / server_height
+                    mapped_y = int(relative_y * self.screen_height)
+                    
+                    # Ensure coordinates stay within screen bounds
+                    mapped_x = max(self.margin, min(mapped_x, self.screen_width - self.margin))
+                    mapped_y = max(0, min(mapped_y, self.screen_height))
                     
                     if self.is_linux:
                         pyautogui.moveTo(mapped_x, mapped_y)
