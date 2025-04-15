@@ -48,14 +48,16 @@ class Client:
                 x = command['x']
                 y = command['y']
                 
-                # Only handle right edge transition
+                # Handle transition from server to client
                 margin = 10
                 if x <= margin:
-                    # Move to right edge of client screen
+                    # When receiving a transition command (x <= margin),
+                    # move the cursor to the right edge of client screen
                     x = self.screen_width - margin
                     pyautogui.moveTo(x, y, duration=0.1)
                 else:
-                    # Normal mouse movement
+                    # For normal mouse movements, use the received coordinates directly
+                    # This allows free movement on the client screen
                     pyautogui.moveTo(x, y, duration=0.1)
             
             elif command['type'] == 'mouse_click':
