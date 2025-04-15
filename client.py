@@ -80,16 +80,18 @@ class Client:
             elif command['type'] == 'mouse_click':
                 x = command['x']
                 y = command['y']
-                button = command['button']
+                button_str = command['button']
                 pressed = command['pressed']
                 
                 # Convert string button to Button enum
-                if 'left' in button.lower():
+                if 'Button.left' in button_str:
                     button = Button.left
-                elif 'right' in button.lower():
+                elif 'Button.right' in button_str:
                     button = Button.right
-                elif 'middle' in button.lower():
+                elif 'Button.middle' in button_str:
                     button = Button.middle
+                else:
+                    button = Button.left  # Default to left button if unknown
                 
                 if pressed:
                     pyautogui.mouseDown(x, y, button=button)
